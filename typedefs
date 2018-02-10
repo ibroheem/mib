@@ -1,0 +1,80 @@
+#ifndef TYPEDEFS_H
+#define TYPEDEFS_H
+
+typedef  const char cchar;
+typedef  const double cdouble;
+typedef  const int cint;
+
+typedef  unsigned int uint;
+typedef  const unsigned int cuint;
+
+typedef  char int8;
+typedef  const char cint8;
+
+typedef  unsigned char uint8;
+typedef  const unsigned char cuint8;
+
+typedef  short int16;
+typedef  const short cint16;
+
+typedef  unsigned short uint16;
+typedef  const unsigned short cuint16;
+
+typedef  int int32;
+typedef  const int cint32;
+
+typedef  unsigned int uint32;
+typedef  const unsigned int cuint32;
+
+typedef  long long  int64;
+typedef  const long long cint64;
+
+typedef  unsigned long long uint64;
+typedef  const unsigned long long cuint64;
+
+typedef  unsigned long ulong;
+typedef  const unsigned long culong;
+
+typedef  long long lli;
+typedef  unsigned long long ulli;
+typedef  const unsigned long long culli;
+
+typedef unsigned char uchar;
+typedef unsigned const char ucchar;
+typedef unsigned char boolean;
+
+#ifndef TRUE
+   #define TRUE  1
+#endif
+
+#ifndef FALSE
+   #define FALSE 0
+#endif
+
+#if __cplusplus > 201402L
+   template <typename T>
+   using  init_list = std::initializer_list<T>;
+#endif // __cplusplus
+
+
+#if __cplusplus
+   #if __GNUC__ == 6
+namespace std{
+      using string = std::__cxx11::string;
+      //typedef std::basic_string<char> string;
+      //typedef std::basic_string<unsigned char> ustring;
+}
+   #endif // __GNUC__
+   typedef const std::string  c_string;
+   typedef std::string&       ref_string;
+   typedef const std::string& c_ref_string;
+#endif // __cplusplus
+
+#ifdef QSTRING_H
+   typedef QString         qstring;
+   typedef const QString   c_qstring;
+   typedef QString &       ref_qstring;
+   typedef const QString & c_ref_qstring;
+#endif // QSTRING_H
+
+#endif//TYPEDEFS_H

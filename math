@@ -1,0 +1,355 @@
+#ifndef MATH_H
+#define MATH_H
+
+#include <vector>
+
+namespace mvc_utils
+{
+   namespace math
+   {
+      namespace conversion
+      {
+         template <class T>
+         std::string itoa(T n, int base = 10)
+         {
+            std::string buf;
+            std::div_t dv = {};
+            dv.quot = n;
+            do
+            {
+               dv = std::div(dv.quot, base);
+               buf += "0123456789abcdef"[std::abs(dv.rem)];  // the type of the string literal is const char[17]
+            }
+            while(dv.quot);
+            if(n < 0) buf += '-';
+            return {buf.rbegin(), buf.rend()};
+         }
+
+         template <class T>
+         //bool even(const auto &c)
+         bool even(const T &c)
+         {
+            return (c % 2 == 0) ? true : false;
+         }
+
+         bool prime(const auto &n)
+         {
+            auto d = 2;
+            for (; d < n; ++d)
+               if (n % d == 0)
+                  return false;
+
+            return true;
+         }
+
+         template <class T = int>
+         T exponent(const auto &num, const auto &power)
+         {
+            T res = 1;
+            for (size_t i = 0; i < power; ++i)
+               res *= num;
+            return res;
+         }
+
+         /** Usage: to_num<long long int>("3094599898899") */
+         template <class T = int>
+         T to_num (const string &s)
+         {
+            size_t i_end = s.size() - 1;
+            T res = 0;
+            for (size_t i = 0; i <= i_end; ++i)
+               res +=  (exponent<T>(10, i_end - i)) * (s[i] - '0');
+            return res;
+         }
+
+         template <class T = int>
+         T to_num (char c)
+         {
+            return static_cast<T>(c - '0');
+         }
+      }
+
+      namespace misc
+      {
+         template <int Num>
+         struct is_even
+         {
+            static constexpr bool value = is_even < Num % 2 >::value;
+         };
+
+         template <>
+         struct is_even <1>
+         {
+            static constexpr bool value = false;
+         };
+
+         template <>
+         struct is_even <0>
+         {
+            static constexpr bool value = true;
+         };
+
+         template <class T>
+         bool is_prime(const T & n)
+         {
+            auto d = 2;
+            for (; d < n; ++d)
+               if (n % d == 0)
+                  return false;
+
+            return true;
+         }
+
+         bool prime(const auto &n)
+         {
+            auto d = 2;
+            for (; d < n; ++d)
+               if (n % d == 0)
+                  return false;
+
+            return true;
+         }
+
+         template <class T = int>
+         T exponent(const auto &num, const auto &power)
+         {
+            T res = 1;
+            for (size_t i = 0; i < power; ++i)
+               res *= num;
+            return res;
+         }
+
+         /** Usage: to_num<long long int>("3094599898899") */
+         template <class T = int>
+         T to_num (const string &s)
+         {
+            size_t i_end = s.size() - 1;
+            T res = 0;
+            for (size_t i = 0; i <= i_end; ++i)
+               res +=  (exponent<T>(10, i_end - i)) * (s[i] - '0');
+            return res;
+         }
+
+         template <class T = int>
+         T to_num (char c)
+         {
+            return static_cast<T>(c - '0');
+         }
+      }
+
+      namespace fib
+      {
+         template <typename T = long>
+         class fibonacci
+         {
+            public:
+               fibonacci() = default;
+               fibonacci(const T &_param) : m_data(_param) { }
+
+               T& recursive();
+
+            private:
+               T m_data = 1;
+         };
+
+         template <typename T>
+         T& fibonacci<T>::recursive()
+         {
+            if (m_data < 1)
+               return recursive(m_data - 1) - recursive(m_data - 2);
+         }
+      }
+
+      namespace power
+      {
+         template <class T>
+         auto square(const T& n) { return n * n; }
+
+         template <class T>
+         T power(const T& n, int p)
+         {
+            T total = 1;
+            for (int i = 0; i < p; ++i)
+               total *= n;
+            return total;
+         }
+      }
+
+
+   }
+}
+
+namespace mvc_utils
+{
+   namespace math
+   {
+      namespace number_system
+      {
+         using namespace conversion;
+
+         template <class T>
+         char hex_alpha(T num)
+         {
+            switch (num)
+            {
+               case 10: return 'A';
+               case 11: return 'B';
+               case 12: return 'C';
+               case 13: return 'D';
+               case 14: return 'E';
+               case 15: return 'F';
+               default: return 'X';
+            }
+         }
+
+         int hex_num(char num)
+         {
+            /**int i = 0;
+            for (char c = 'A'; c <= 'F'; ++c, ++i)
+               if (c == num)
+                  return 10 + i;
+            return -1;**/
+            switch (num)
+            {
+               case 'A': return 10;
+               case 'B': return 11;
+               case 'C': return 12;
+               case 'D': return 13;
+               case 'E': return 14;
+               case 'F': return 15;
+               default : return -1;
+            }
+            return -1;
+         }
+
+         template <class T_RET = int, class T_NUM = T_RET>
+         T_RET to_dec(T_NUM num, int base)
+         {
+            T_RET res= 0;
+            string s = to_string(num);
+            for (size_t i = 0, power = s.size() - 1; i != s.size(); ++i, --power)
+            {
+               if (base == 16 && isalpha(s[i]))
+                  res += hex_num(s[i]) * exponent<T_RET>(base, power);
+               else
+                  res += to_num(s[i])  * exponent<T_RET>(base, power);
+            }
+            return res;
+         }
+
+         template <class T_RET>
+         T_RET to_dec(char num, int base)
+         {
+            T_RET res= 0;
+            size_t power = 0;
+
+            if (base == 16 && isalpha(num))
+               res += hex_num(num);
+            else
+               res += to_num(num)  * exponent<T_RET>(base, power);
+
+            return res;
+         }
+
+         template <class T_RET = int>
+         T_RET to_dec(const string& num, int base)
+         {
+            T_RET res= 0;
+
+            for (size_t i = 0, power = num.size() - 1; i != num.size(); ++i, --power)
+            {
+               if (base == 16 && isalpha(num[i]))
+                  res += hex_num(num[i]) * exponent<T_RET>(base, power);
+               else
+                  res += to_num(num[i])  * exponent<T_RET>(base, power);
+            }
+
+            return res;
+         }
+
+         template <class T_RET>
+         T_RET to_dec(const char* num, int base)
+         {
+            return to_dec<T_RET>(static_cast<string>(num), base);
+         }
+
+         void usages()
+         {
+            /*print_ln(to_dec<int>(24, 32));
+            print_ln(to_dec<int>(24, 16));
+            print_ln(to_dec<int>('B', 16));
+            print_ln(to_dec<int>('6', 16));
+            print_ln(to_dec<int>("BB", 16));
+            print_ln(to_dec<int>("4C", 16));
+            print_ln(to_dec<int>("4CDC", 16));
+            print_ln(to_dec<int>(10, 2));*/
+         }
+      }
+   }
+}
+
+namespace mvc_utils
+{
+   namespace math
+   {
+      template <class T, class T2>
+      auto lcf(const T& num, T2 start_no = 2)
+      {
+         for( ;start_no < num; ++start_no)
+         {
+            if ((num % start_no) == 0)
+               return start_no;
+         }
+      }
+
+      template <class T, class T2>
+      auto hcf(const T& num, T2 start_no = 2)
+      {
+         if (num % 2 == 0)
+            return num / 2;
+
+         return num / lcf(num/start_no);
+      }
+
+      /// cont => sequential container, RandomAccessible, vector, deque
+      template <class T, class TSTART_NUM>
+      void factors_seq(const auto& num, T& seq_cont, TSTART_NUM start_no = 2)
+      {
+         for( ;start_no < num; ++start_no)
+         {
+            if ((num % start_no) == 0)
+               seq_cont.push_back(start_no);
+         }
+      }
+
+      /// cont => Associtive container, map and multimap
+      template <class T>
+      void factors_assoc(const auto& num, T& assoc_cont, auto start_no = 2)
+      {
+         std::vector<int> ftmp;
+
+         factors_seq(num, ftmp, start_no);
+
+         size_t       j    = ftmp.size();
+         const size_t half =  j / 2;
+         --j;
+
+         for (size_t i = 0; i <= half; ++i, --j)
+         {
+            assoc_cont.insert( {ftmp[i], ftmp[j]} );
+            if (ftmp[j] == ftmp[i + 1])
+               break;
+         }
+      }
+
+      void usage_factors()
+      {
+         /*multimap<int, int> fc;
+         factors_assoc(100, fc);
+         factors_assoc(30, fc);
+         mvc_utils::io::print_map_ln(fc, '\t');*/
+      }
+   }
+}
+
+#endif//MATH_H
