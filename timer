@@ -1,0 +1,52 @@
+#ifndef timer_h
+#define timer_h
+
+#include <chrono>
+
+using namespace std;
+using namespace std::chrono;
+
+namespace mvc_utils
+{
+   struct timer
+   {
+      enum init_mode { delayed, immediate };
+
+      /// Initializes timer object
+      timer() = default;
+
+      ///Initializes timer object and start timer
+      inline timer(init_mode) : m_start(steady_clock::now()) { }
+
+      inline void start() { m_start = steady_clock::now(); }
+      inline void end_timer()   { m_end   = steady_clock::now(); }
+      inline void stop()  { m_end   = steady_clock::now(); }
+
+      /// Calculates time elapsed, end_timer() should be called before using this
+      template <class T = chrono::nanoseconds>
+      inline size_t time_elapsed() { return duration_cast<T>(m_end - m_start).count(); }
+
+      /// Calculates time elapsed. Uses its steady_clock::now() - start, no end_timer need to be called
+      inline size_t time_elapsed_w_end()
+      {
+         return duration_cast<chrono::microseconds>(steady_clock::now() - m_start).count();
+      }
+
+      /// Calculates time elapsed. Uses its steady_clock::now() - start, no end_timer need to be called
+      template <class T = chrono::nanoseconds>
+      inline size_t stop_w_end()
+      {
+         return duration_cast<T>(steady_clock::now() - m_start).count();
+      }
+
+      template <class T = chrono::nanoseconds>
+      inline size_t stop_w_elapsed()
+      {
+         return duration_cast<T>(steady_clock::now() - m_start).count();
+      }
+
+      steady_clock::time_point m_start, m_end;
+   };
+}
+
+#endif//timer_h
